@@ -70,9 +70,6 @@ net = PreActResNet18()
 # net = RegNetX_200MF()
 # net = SimpleDLA()
 net = net.to(device)
-if device == 'cuda':
-    net = torch.nn.DataParallel(net)
-    cudnn.benchmark = True
 
 if args.resume:
     # Load checkpoint.
@@ -137,14 +134,9 @@ def test(epoch):
     acc = 100.*correct/total
     if acc > best_acc:
         print('Saving..')
-        state = {
-            'net': net.state_dict(),
-            'acc': acc,
-            'epoch': epoch,
-        }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
-        torch.save(state, './checkpoint/ckpt.pth')
+        torch.save(net.state_dict(), './checkpoint/ckpt.pth')
         best_acc = acc
 
 
